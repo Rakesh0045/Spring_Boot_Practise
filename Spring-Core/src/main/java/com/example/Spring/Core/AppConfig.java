@@ -35,6 +35,17 @@ public class AppConfig {
     */
 
 
+    //Registering Beans of CalculatorService and MessageService
+
+    @Bean
+    public CalculatorService calculatorService(){
+        return new CalculatorService();
+    }
+
+    @Bean
+    public MessageService messageService(){
+        return new MessageService();
+    }
 
 
 

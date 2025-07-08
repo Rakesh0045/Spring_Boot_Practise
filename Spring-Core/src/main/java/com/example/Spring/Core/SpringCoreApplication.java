@@ -18,6 +18,20 @@ public class SpringCoreApplication {
 
 		System.out.println("GreetingsService bean fetched successfully. Calling method...");
 		greetingsService.sayHello();
+
+		System.out.println("Fetching CalculatorService bean from context...");
+		CalculatorService calculatorService = context.getBean(CalculatorService.class);
+
+		System.out.println("CalculatorService Bean Fetched Succesfully. calling method");
+		System.out.println("Sum is: "+calculatorService.add(5,10));
+
+		System.out.println("Fetching MessageService bean from context...");
+		MessageService messageService = context.getBean(MessageService.class);
+
+		System.out.println("MessageService Bean Fetched Succesfully. calling method");
+		System.out.println("Message is: "+messageService.getMessage());
+
+
 	}
 
 }
