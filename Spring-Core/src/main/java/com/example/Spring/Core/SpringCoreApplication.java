@@ -11,12 +11,13 @@ public class SpringCoreApplication {
 
 		ApplicationContext context = SpringApplication.run(SpringCoreApplication.class, args);
 
-		Person person = context.getBean(Person.class);
-		person.sayHello();
+		System.out.println("Spring context initialized successfully");
 
-		Student student = context.getBean(Student.class);
-		student.sayHello();
+		System.out.println("Fetching GreetingsService bean from context...");
+		GreetingsService greetingsService = context.getBean(GreetingsService.class);
 
+		System.out.println("GreetingsService bean fetched successfully. Calling method...");
+		greetingsService.sayHello();
 	}
 
 }
