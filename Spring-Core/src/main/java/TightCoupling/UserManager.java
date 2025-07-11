@@ -1,7 +1,7 @@
 package TightCoupling;
 
 public class UserManager {
-    private UserDataBase userDatabase = new UserDataBase();
+    private NewUserDataBase userDatabase = new NewUserDataBase();
 
     public String getUserInfo(){
         return userDatabase.getUserDetails();
