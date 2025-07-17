@@ -10,7 +10,7 @@
     </bean>
 
     <bean id="laptopBean" class="SetterInjection.Laptop">
-        <property name="specification" ref="specificationBean"/>
+        <property name="specificationBean" ref="specificationBean"/>
     </bean>
 
 <!--    ✅ What Spring Does Here:-->
