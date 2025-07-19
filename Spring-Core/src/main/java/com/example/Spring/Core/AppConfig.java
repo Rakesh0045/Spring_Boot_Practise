@@ -35,7 +35,7 @@ public class AppConfig {
     */
 
 
-    //Registering Beans of CalculatorService and MessageService
+    //Registering Bean of CalculatorService and MessageService
 
     @Bean
     public CalculatorService calculatorService(){
