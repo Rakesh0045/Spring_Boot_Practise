@@ -3,13 +3,14 @@ package com.example.Spring.Core;
 import org.springframework.context.ApplicationContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @SpringBootApplication
 public class SpringCoreApplication {
 
 	public static void main(String[] args) {
 
-		ApplicationContext context = SpringApplication.run(SpringCoreApplication.class, args);
+		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
 		System.out.println("Spring context initialized successfully");
 
