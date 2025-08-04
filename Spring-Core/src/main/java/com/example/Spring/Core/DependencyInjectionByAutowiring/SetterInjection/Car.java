@@ -8,14 +8,10 @@ public class Car {
 
     private Engine engine;
 
-     @Autowired
-     public void setEngine(Engine engine) {
-         System.out.println("Setter method called - DI");
-         this.engine = engine;
-     }
-
-    public Car(){
-        System.out.println("Car object is initialized");
+    @Autowired
+    public Car(Engine engine){
+        this.engine = engine;
+        System.out.println("Car object is initialized along with wired bean of Engine");
     }
 
     public void runCar() {
@@ -24,14 +20,3 @@ public class Car {
     }
 
 }
-
-/*
-
-        | Step | Action                                                               |
-        | ---- | -------------------------------------------------------------------- |
-        | 1️⃣  | Spring detects `@Component` class                                    |
-        | 2️⃣  | Spring calls the constructor (`new Car()`)                           |
-        | 3️⃣  | Spring injects dependencies using `@Autowired` (setter in your case) |
-        | 4️⃣  | Bean is fully initialized and stored in context                      |
-
- */
