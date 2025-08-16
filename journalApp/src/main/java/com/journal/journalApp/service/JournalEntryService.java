@@ -20,7 +20,7 @@ public class JournalEntryService {
         journalEntryRepository.save(journalEntry);
     }
 
-    public List<JournalEntry> getALl(){
+    public List<JournalEntry> getAll(){
         return journalEntryRepository.findAll();
     }
 
