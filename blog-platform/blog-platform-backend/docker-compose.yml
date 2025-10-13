@@ -11,4 +11,4 @@ services:
     image: adminer:latest
     restart: always
     ports:
-      - 8888:2801
+      - 8888:2802
