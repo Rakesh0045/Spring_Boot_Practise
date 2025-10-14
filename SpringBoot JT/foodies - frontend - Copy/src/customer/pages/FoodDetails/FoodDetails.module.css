@@ -1,0 +1,17 @@
+.food-image {
+    height: 400px; 
+    width: 100%;
+    /* object-fit: cover;  */
+    object-fit: contain; 
+    /* background-color: #f9f8fa; */
+    border-radius: 4px;
+}
+
+.imageHidden {
+  opacity: 0;
+}
+
+.fadeIn {
+  opacity: 1;
+  transition: opacity .8s ease-in;
+}
