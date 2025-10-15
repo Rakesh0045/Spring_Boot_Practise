@@ -18,7 +18,7 @@ const LoginPage = () => {
 
     try {
       const response = await apiService.login({ email, password });
-      login(response);
+      login(response.token); // This is the useCallback function from AuthContext.tsx
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please try again.');

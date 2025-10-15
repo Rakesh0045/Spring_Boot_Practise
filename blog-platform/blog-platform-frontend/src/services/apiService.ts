@@ -122,10 +122,23 @@ class ApiService {
     };
   }
 
+   public setAuthHeader(token: string | null): void {
+    if (token) {
+      this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete this.api.defaults.headers.common['Authorization'];
+    }
+  }
+
   // Auth endpoints
   public async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response: AxiosResponse<AuthResponse> = await this.api.post('/auth/login', credentials);
-    localStorage.setItem('token', response.data.token);
+    const { token } = response.data;
+    
+    localStorage.setItem('token', token);
+    
+    this.setAuthHeader(token); 
+    
     return response.data;
   }
 
