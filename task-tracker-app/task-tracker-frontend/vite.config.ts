@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://spring-taskapp-backend.onrender.com',
         changeOrigin: true,
       }
     }
