@@ -137,7 +137,7 @@ const TaskListScreen: React.FC = () => {
         </TableRow>
       ));
     } else {
-      return null;
+      return [];
     }
   };
 
