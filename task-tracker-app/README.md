@@ -24,7 +24,7 @@ TaskMaster Pro is a modern full-stack task management app that helps you plan pr
 <br>
 
 ### 🎬 **App Preview**
-
+![TaskMaster Pro Demo](Taskapp.gif)
 
 <br>
 
