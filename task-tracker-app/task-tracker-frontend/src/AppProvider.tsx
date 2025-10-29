@@ -175,6 +175,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     headers: { "Content-Type": "application/json" },
   };
 
+
+  if (import.meta.env.VITE_API_BASE_URL) {
+    axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL as string
+  }
+
   // API calls
   const api: AppContextType["api"] = {
     fetchTaskLists: async () => {

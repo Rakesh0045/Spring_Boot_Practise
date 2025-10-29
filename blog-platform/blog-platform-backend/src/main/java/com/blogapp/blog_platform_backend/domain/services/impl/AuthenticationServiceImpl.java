@@ -38,14 +38,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
+
+        System.out.println("--- Generating a new token at: " + new Date() + " ---");
+
         Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder()
+        String token = Jwts.builder() // <-- Store the token in a variable
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiryMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+
+        System.out.println("Server generated this token: " + token);
+
+        return token;
     }
 
     private String extractUsername(String token) {

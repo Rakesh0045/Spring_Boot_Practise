@@ -45,7 +45,8 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.delete(category);
     }
 
-    private Category getCategoryById(UUID id) {
+    @Override
+    public Category getCategoryById(UUID id) {
         return categoryRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("Category not found with id: " + id));
     }
