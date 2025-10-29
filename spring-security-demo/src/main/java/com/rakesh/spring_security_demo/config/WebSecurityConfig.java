@@ -72,3 +72,37 @@ public class WebSecurityConfig {
         return daoAuthenticationProvider;
     }
 }
+
+/*
+
+                Client POST /auth/login (email,password)
+                  ↓
+                Controller -> AuthenticationManager.authenticate()
+                  ↓
+                UserDetailsService.loadUserByUsername -> DB
+                  ↓
+                PasswordEncoder.matches -> success
+                  ↓
+                JwtService.generateToken() -> return token
+                  ↓
+                Client stores token
+
+
+
+
+                Client GET /posts (Authorization: Bearer <token>)
+                  ↓
+                JwtAuthenticationFilter.extractToken()
+                  ↓
+                JwtService.validateToken()
+                  ↓
+                 UserDetailsService.loadUserByUsername()
+                  ↓
+                Create Authentication -> SecurityContextHolder.setAuthentication(...)
+                  ↓
+                Controller executes (access allowed)
+
+
+
+ */
+
