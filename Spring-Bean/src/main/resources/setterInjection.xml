@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="specificationBean" class="SetterInjection.Specification">
+        <property name="processor" value="intel core i7"/>
+        <property name="modelName" value="Samsung Galaxy Book 4"/>
+    </bean>
+
+    <bean id="laptopBean" class="SetterInjection.Laptop">
+        <property name="specificationBean" ref="specificationBean"/>
+    </bean>
+
+<!--    ✅ What Spring Does Here:-->
+<!--    -->
+<!--    Creates Specification object with:-->
+<!--        processor = "intel core i7"-->
+<!--        modelName = "Samsung Galaxy Book 4"-->
+
+<!--    Then creates Laptop object and calls:-->
+<!--        laptop.setSpecification(specificationBean)-->
+<!--    -->
+<!--    📌 This is setter injection in action.-->
+
+</beans>

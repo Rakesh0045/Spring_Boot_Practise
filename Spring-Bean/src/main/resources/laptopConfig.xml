@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="specificationBean" class="ConstructorInjection.Specification">
+        <property name="processor" value="intel core i7"/>
+        <property name="modelName" value="Samsung Galaxy Book 4"/>
+    </bean>
+
+    <bean id="laptopBean" class="ConstructorInjection.Laptop">
+        <constructor-arg ref="specificationBean"/>
+    </bean>
+
+<!--    ✅ Here's what Spring will do:-->
+    <!--    Create the Specification object-->
+    <!--    Set its properties using <property>-->
+    <!--    Pass it to Laptop’s constructor using <constructor-arg>-->
+
+
+
+
+<!--    What Happens Behind the Scenes?-->
+
+    <!--    Spring parses laptopConfig.xml-->
+
+    <!--    It creates a Specification object-->
+
+    <!--    It calls:-->
+        <!--    new Specification();-->
+        <!--    spec.setProcessor("intel core i7");-->
+        <!--    spec.setModelName("Samsung Galaxy Book 4");-->
+
+    <!--    Then it creates:-->
+        <!--    new Laptop(specificationBean);-->
+        <!--    All of this happens before main() runs!-->
+
+</beans>

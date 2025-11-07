@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="specificationBean" class="AutoWiringByType.Specification">
+        <property name="processor" value="intel core i7"/>
+        <property name="modelName" value="Samsung Galaxy Book 4"/>
+    </bean>
+
+    <bean id="warrantyBean" class="AutoWiringByType.WarrantySpec">
+        <property name="warranty_years" value="2"/>
+        <property name="warrantyOn" value="Physical Damage Only"/>
+    </bean>
+
+    <!-- Bean with autowire by type "Laptop"  -->
+    <bean id="laptopBean" class="AutoWiringByType.Laptop" autowire="byType" />
+
+    <!-- Bean with autowire by type "Laptop2" -->
+    <bean id="laptopWarrantyBean" class="AutoWiringByType.Laptop2" autowire="byType" />
+
+</beans>

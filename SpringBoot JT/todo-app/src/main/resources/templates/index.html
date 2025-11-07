@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo-App</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="todo-app">
+        <h2>To-Do Lists<img src="/images/todo.png" alt="#"></h2>
+
+        <!-- for adding todo -->
+         <form action="/add" class="row" method="post">
+            <input type="text" placeholder="Add your task" name="task">
+            <button>Add</button>
+         </form>
+
+        <!-- for displaying todo -->
+        <ul>
+            <li th:each="todo : ${todos}" th:class="${todo.completed} == true ? 'checked':'' ">
+                <form th:action="@{| /toggle/${todo.id} |}">
+                    <button th:text="${todo.task}" style="all:unset"></button>
+                </form> 
+
+                <form th:action="@{|/delete/${todo.id}|}">
+                    <button class="delete-btn">🗑️</button>
+                </form>
+            </li>
+        </ul>
+
+        <!-- <form th:action="@{|/get-value/${todos[0].id}|}">
+            HTML doesnt understand ${todos[0].id} hence we use thymeleaf th:action 
+            <button>Click here</button>
+        </form> -->
+
+    </div>
+</div>
+</body>
+
+</html>

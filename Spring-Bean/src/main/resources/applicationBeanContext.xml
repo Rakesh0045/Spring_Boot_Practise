@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Register MyBean with Spring -->
+    <bean id="myBean" class="FirstBean.MyBean">
+        <property name="message" value="Hello from XML Bean!"/>
+    </bean>
+
+</beans>
+
+<!--        ✅ This tells Spring:-->
+<!--        Create an object of class FirstBean.MyBean-->
+<!--        Inject the string "Hello from XML Bean!" into its setMessage() method-->
