@@ -1,4 +1,4 @@
-package com.restaurantreviewapp.restaurant_review_backend.domain.exceptions;
+package com.restaurantreviewapp.restaurant_review_backend.exceptions;
 
 public class StorageException extends BaseException{
 

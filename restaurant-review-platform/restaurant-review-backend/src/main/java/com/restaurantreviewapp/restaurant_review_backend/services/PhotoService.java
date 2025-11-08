@@ -1,4 +1,4 @@
-package com.restaurantreviewapp.restaurant_review_backend.domain.services;
+package com.restaurantreviewapp.restaurant_review_backend.services;
 
 import com.restaurantreviewapp.restaurant_review_backend.domain.entities.Photo;
 import org.springframework.core.io.Resource;

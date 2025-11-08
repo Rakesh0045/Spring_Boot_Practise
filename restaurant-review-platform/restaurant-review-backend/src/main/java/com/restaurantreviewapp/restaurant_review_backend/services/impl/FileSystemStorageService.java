@@ -1,7 +1,7 @@
-package com.restaurantreviewapp.restaurant_review_backend.domain.services.impl;
+package com.restaurantreviewapp.restaurant_review_backend.services.impl;
 
-import com.restaurantreviewapp.restaurant_review_backend.domain.exceptions.StorageException;
-import com.restaurantreviewapp.restaurant_review_backend.domain.services.StorageService;
+import com.restaurantreviewapp.restaurant_review_backend.exceptions.StorageException;
+import com.restaurantreviewapp.restaurant_review_backend.services.StorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;

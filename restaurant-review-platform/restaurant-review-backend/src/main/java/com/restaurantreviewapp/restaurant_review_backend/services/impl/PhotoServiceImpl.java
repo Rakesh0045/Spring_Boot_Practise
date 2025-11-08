@@ -1,8 +1,8 @@
-package com.restaurantreviewapp.restaurant_review_backend.domain.services.impl;
+package com.restaurantreviewapp.restaurant_review_backend.services.impl;
 
 import com.restaurantreviewapp.restaurant_review_backend.domain.entities.Photo;
-import com.restaurantreviewapp.restaurant_review_backend.domain.services.PhotoService;
-import com.restaurantreviewapp.restaurant_review_backend.domain.services.StorageService;
+import com.restaurantreviewapp.restaurant_review_backend.services.PhotoService;
+import com.restaurantreviewapp.restaurant_review_backend.services.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

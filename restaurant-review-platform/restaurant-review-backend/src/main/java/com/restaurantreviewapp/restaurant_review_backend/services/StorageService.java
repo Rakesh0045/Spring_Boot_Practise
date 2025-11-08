@@ -1,4 +1,4 @@
-package com.restaurantreviewapp.restaurant_review_backend.domain.services;
+package com.restaurantreviewapp.restaurant_review_backend.services;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
