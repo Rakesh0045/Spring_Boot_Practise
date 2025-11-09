@@ -20,9 +20,7 @@ public interface RestaurantRepository extends ElasticsearchRepository<Restaurant
             "       {\"range\": {\"averageRating\": {\"gte\": ?1}}}" +
             "   ]," +
             "   \"should\": [" +
-            // ADD QUOTES BACK AROUND ?0 HERE
             "       {\"fuzzy\": {\"name\": {\"value\": \"?0\", \"fuzziness\": \"AUTO\"}}}," +
-            // AND HERE
             "       {\"fuzzy\": {\"cuisineType\": {\"value\": \"?0\", \"fuzziness\": \"AUTO\"}}}" +
             "   ]," +
             "   \"minimum_should_match\": 1" +

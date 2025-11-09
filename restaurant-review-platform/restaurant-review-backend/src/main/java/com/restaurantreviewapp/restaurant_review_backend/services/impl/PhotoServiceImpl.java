@@ -21,7 +21,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public Photo uploadPhoto(MultipartFile file) {
 
-        //Generate a unique ID for the photo
+        // Generate a unique ID for the photo
         String photoId = UUID.randomUUID().toString();
 
         // Store the file and get its URL

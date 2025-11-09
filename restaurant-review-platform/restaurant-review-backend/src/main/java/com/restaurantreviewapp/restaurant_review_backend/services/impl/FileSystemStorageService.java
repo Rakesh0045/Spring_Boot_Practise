@@ -24,11 +24,14 @@ import java.util.Optional;
 @Slf4j
 public class FileSystemStorageService implements StorageService {
 
+    // @Value annotation lets us configure the storage location through application properties, with a default value of "uploads" if not specified.
     @Value("${app.storage.location:uploads}")
     private String storageLocation;
 
+    // root location of storage directory
     private Path rootLocation;
 
+    // After bean creation of this class, initialize the storage location
     @PostConstruct
     public void init(){
         rootLocation = Paths.get(storageLocation);
@@ -39,26 +42,32 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+
     @Override
     public String store(MultipartFile file, String filename) {
 
+        // Check for empty files
         try{
             if(file.isEmpty()){
                 throw new StorageException("cannot save an empty file");
             }
 
+            // Create final filename with extension
             String extension = StringUtils.getFilenameExtension(file.getOriginalFilename());
             String finalFileName = filename + "." + extension;
 
+            // Resolve and normalize the destination path
             Path destinationFile = rootLocation
                     .resolve(Paths.get(finalFileName))
                     .normalize()
                     .toAbsolutePath();
 
+            // Security check to prevent directory traversal
             if(!destinationFile.getParent().equals(rootLocation.toAbsolutePath())){
                 throw new StorageException("Cannot store file outside specified directory");
             }
 
+            // Copy the file to the destination
             try(InputStream inputStream = file.getInputStream()){
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -72,8 +81,10 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public Optional<Resource> loadAsResource(String filename) {
         try {
+            // Resolve the file path relative to our root location
             Path file = rootLocation.resolve(filename);
 
+            // Create a Resource object from the file path
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {

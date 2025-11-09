@@ -20,6 +20,7 @@ public interface RestaurantMapper {
 
     RestaurantCreateUpdateRequest toRestaurantCreateUpdateRequest(RestaurantCreateUpdateRequestDto dto);
 
+    @Mapping(source = "reviews", target = "totalReviews", qualifiedByName = "populateTotalReviews")
     RestaurantDto toRestaurantDto(Restaurant restaurant);
 
     // toGeoPointDto method converts Elasticsearch's GeoPoint type to our DTO format
