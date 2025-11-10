@@ -21,6 +21,9 @@ const getImage = (restaurant: RestaurantSummary) => {
 };
 
 export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
+  // Round the average rating to the nearest whole number
+  const roundedRating = Math.round(restaurant.averageRating ?? 0);
+
   return (
     <Link href={`/restaurants/${restaurant.id}`}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -53,9 +56,10 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
               <Star
                 key={i}
                 className={`w-4 h-4 ${
-                  restaurant.averageRating
+                  // Check if the current star index (i) is less than the rating
+                  i < roundedRating
                     ? "text-yellow-400 fill-yellow-400"
-                    : "text-gray-300"
+                    : "text-gray-300 fill-gray-300" // Also fill gray for consistency
                 }`}
               />
             ))}
