@@ -30,9 +30,9 @@ This application follows a modern, decoupled architecture. The Spring Boot backe
 
 ```mermaid
 graph TD
-    A[React Frontend] -->|REST API Calls (HTTPS)| B("Spring Boot Backend");
+    A[React Frontend] -->|"REST API Calls (HTTPS)"| B("Spring Boot Backend");
     B -->|Verify JWT| C(Keycloak Auth Server);
-    B -->|Search/CRUD (Java API)| D[Elasticsearch];
+    B -->|"Search/CRUD (Java API)"| D[Elasticsearch];
     A -->|Login/Auth| C;
     C -->|Issues JWT| A;
     E(Admin/Developer) -->|Manages Index| F(Kibana Dashboard);
