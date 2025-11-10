@@ -63,7 +63,7 @@ public class RestaurantDataLoaderTest {
 
             restaurant.setPhotoIds(List.of(uploadedPhoto.getUrl()));
 
-            restaurantService.createRestaurant(restaurant);
+            restaurantService.createRestaurant(null,restaurant);
 
             System.out.println("Created restaurant: " + restaurant.getName());
         });

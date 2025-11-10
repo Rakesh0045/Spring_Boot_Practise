@@ -34,7 +34,7 @@ public interface RestaurantMapper {
     // map the totalReviews field to this method which returns the size of List
     @Named("populateTotalReviews")
     default Integer populateTotalReviews(List <Review> reviews) {
-        return reviews.size();
+        return reviews == null ? 0 : reviews.size();
     }
 
 

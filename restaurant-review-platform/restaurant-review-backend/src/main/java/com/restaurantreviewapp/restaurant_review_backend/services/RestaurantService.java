@@ -2,6 +2,7 @@ package com.restaurantreviewapp.restaurant_review_backend.services;
 
 import com.restaurantreviewapp.restaurant_review_backend.domain.RestaurantCreateUpdateRequest;
 import com.restaurantreviewapp.restaurant_review_backend.domain.entities.Restaurant;
+import com.restaurantreviewapp.restaurant_review_backend.domain.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
 
 public interface RestaurantService {
 
-    Restaurant createRestaurant(RestaurantCreateUpdateRequest request);
+    Restaurant createRestaurant(User author, RestaurantCreateUpdateRequest request);
 
     Page<Restaurant> searchRestaurants(
             String query,
@@ -22,7 +23,7 @@ public interface RestaurantService {
 
     Optional<Restaurant> getRestaurant(String id);
 
-    Restaurant updateRestaurant(String id, RestaurantCreateUpdateRequest restaurantCreateUpdateRequest);
+    Restaurant updateRestaurant(User author, String id, RestaurantCreateUpdateRequest restaurantCreateUpdateRequest);
 
-    void deleteRestaurant(String id);
+    void deleteRestaurant(User author, String id);
 }

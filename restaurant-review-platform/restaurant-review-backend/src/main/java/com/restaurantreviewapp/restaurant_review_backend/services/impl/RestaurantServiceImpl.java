@@ -5,6 +5,7 @@ import com.restaurantreviewapp.restaurant_review_backend.domain.RestaurantCreate
 import com.restaurantreviewapp.restaurant_review_backend.domain.entities.Address;
 import com.restaurantreviewapp.restaurant_review_backend.domain.entities.Photo;
 import com.restaurantreviewapp.restaurant_review_backend.domain.entities.Restaurant;
+import com.restaurantreviewapp.restaurant_review_backend.domain.entities.User;
 import com.restaurantreviewapp.restaurant_review_backend.exceptions.RestaurantNotFoundException;
 import com.restaurantreviewapp.restaurant_review_backend.repositories.RestaurantRepository;
 import com.restaurantreviewapp.restaurant_review_backend.services.GeoLocationService;
@@ -28,7 +29,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final GeoLocationService geoLocationService;
 
     @Override
-    public Restaurant createRestaurant(RestaurantCreateUpdateRequest request) {
+    public Restaurant createRestaurant(User author, RestaurantCreateUpdateRequest request) {
 
         // Extract the address and convert it into coordinates
 
@@ -55,6 +56,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .operatingHours(request.getOperatingHours())
                 .averageRating(0f)
                 .photos(photos)
+                .createdBy(author)
                 .build();
 
         return restaurantRepository.save(restaurant);
@@ -93,41 +95,60 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant updateRestaurant(String id, RestaurantCreateUpdateRequest restaurantCreateUpdateRequest) {
+    public Restaurant updateRestaurant(User author, String id, RestaurantCreateUpdateRequest restaurantCreateUpdateRequest) {
 
         // Get the existing restaurant to be updated
         Restaurant restaurant = getRestaurant(id)
                 .orElseThrow(() -> new RestaurantNotFoundException("Restaurant with ID does not exist: " + id));
 
-        // Get the address of the updated restaurant
-        GeoLocation newGeoLocation = geoLocationService.geoLocate(restaurantCreateUpdateRequest.getAddress());
+        String userId = author.getId();
 
-        // Convert new GeoLocation into ElasticSearch's GeoPoint so that coordinates are mapped
-        GeoPoint newGeoPoint = new GeoPoint(newGeoLocation.getLatitude(), newGeoLocation.getLongitude());
+        if(!restaurant.getCreatedBy().getId().equals(userId)){
+            throw new RuntimeException("Cannot delete another user's restaurant");
+        }else{
+            // Get the address of the updated restaurant
+            GeoLocation newGeoLocation = geoLocationService.geoLocate(restaurantCreateUpdateRequest.getAddress());
 
-        // Convert photo URLs to Photo entities
-        List<Photo> photos = restaurantCreateUpdateRequest.getPhotoIds().stream().map(photoUrl ->
-                Photo.builder()
-                        .url(photoUrl)
-                        .uploadDate(LocalDateTime.now())
-                        .build()
-        ).collect(Collectors.toList());
+            // Convert new GeoLocation into ElasticSearch's GeoPoint so that coordinates are mapped
+            GeoPoint newGeoPoint = new GeoPoint(newGeoLocation.getLatitude(), newGeoLocation.getLongitude());
 
-        // Update all fields except averageRating
-        restaurant.setName(restaurantCreateUpdateRequest.getName());
-        restaurant.setCuisineType(restaurantCreateUpdateRequest.getCuisineType());
-        restaurant.setContactInformation(restaurantCreateUpdateRequest.getContactInformation());
-        restaurant.setAddress(restaurantCreateUpdateRequest.getAddress());
-        restaurant.setGeoLocation(newGeoPoint);
-        restaurant.setOperatingHours(restaurantCreateUpdateRequest.getOperatingHours());
-        restaurant.setPhotos(photos);
+            // Convert photo URLs to Photo entities
+            List<Photo> photos = restaurantCreateUpdateRequest.getPhotoIds().stream().map(photoUrl ->
+                    Photo.builder()
+                            .url(photoUrl)
+                            .uploadDate(LocalDateTime.now())
+                            .build()
+            ).collect(Collectors.toList());
 
-        return restaurantRepository.save(restaurant);
+            // Update all fields except averageRating
+            restaurant.setName(restaurantCreateUpdateRequest.getName());
+            restaurant.setCuisineType(restaurantCreateUpdateRequest.getCuisineType());
+            restaurant.setContactInformation(restaurantCreateUpdateRequest.getContactInformation());
+            restaurant.setAddress(restaurantCreateUpdateRequest.getAddress());
+            restaurant.setGeoLocation(newGeoPoint);
+            restaurant.setOperatingHours(restaurantCreateUpdateRequest.getOperatingHours());
+            restaurant.setPhotos(photos);
+
+            return restaurantRepository.save(restaurant);
+        }
+
     }
 
     @Override
-    public void deleteRestaurant(String id) {
-        restaurantRepository.deleteById(id);
+    public void deleteRestaurant(User author,
+                                 String id) {
+        String authorId = author.getId();
+        Restaurant restaurant = getRestaurantOrThrow(id);
+        if(!restaurant.getCreatedBy().getId().equals(authorId)){
+            throw new RuntimeException("Cannot delete another user's restaurant");
+        }else {
+            restaurantRepository.deleteById(id);
+        }
+    }
+
+    private Restaurant getRestaurantOrThrow(String restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId));
     }
 
 }
