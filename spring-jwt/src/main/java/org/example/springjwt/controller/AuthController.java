@@ -98,4 +98,99 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
 }
+
+
+/*
+
+                             +----------------+
+                             |     Client     |
+                             | (frontend/Post)|
+                             +----------------+
+                                      |
+                                      | POST /auth/signup {username,email,password}
+                                      v
+                          +-----------------------------+
+                          |        AuthController       |
+                          +-----------------------------+
+                                      |
+                                      | calls
+                                      v
+                          +-----------------------------+
+                          |   AuthenticationService     |
+                          | - create User (enabled=false)|
+                          | - gen verification code     |
+                          | - sendVerificationEmail()   |
+                          +-----------------------------+
+                                      |                     \
+                                      | save user              \ send email
+                                      v                        \
+                       +---------------------------+            v
+                       |      UserRepository       |     +-----------------+
+                       |  (Postgres - users table) |<----|   EmailService   |
+                       +---------------------------+     | (JavaMailSender) |
+                                      |                  +-----------------+
+                                      |
+                                      | (user receives code)
+                                      v
+                             (Client UI asks user for code)
+                                      |
+                                      | POST /auth/verify {email,code}
+                                      v
+                          +-----------------------------+
+                          |   AuthenticationService     |
+                          | - validate code & expiry    |
+                          | - set enabled = true        |
+                          | - save user                 |
+                          +-----------------------------+
+                                      |
+                                      | POST /auth/login {email,password}
+                                      v
+                          +-----------------------------+
+                          |   AuthenticationService     |
+                          | - check enabled == true     |
+                          | - authenticationManager.auth|
+                          +-----------------------------+
+                                      |
+                                      | on success
+                                      v
+                              +----------------+
+                              |    JwtService  |
+                              | - generate JWT |
+                              +----------------+
+                                      |
+                                      |  returns token (Bearer <jwt>)
+                                      v
+                             +--------------------+
+                             |     Client Stores   |
+                             |   token (localStorage)|
+                             +--------------------+
+                                      |
+                                      | Request protected resource
+                                      | Authorization: Bearer <jwt>
+                                      v
+                        +----------------------------------+
+                        |    JwtAuthenticationFilter       |
+                        | - extract token from header      |
+                        | - jwtService.validateToken(token)|
+                        | - load UserDetails via repo      |
+                        | - set SecurityContext if OK      |
+                        +----------------------------------+
+                                      |
+                                      v
+                          +-----------------------------+
+                          |   Protected Controller(s)   |
+                          +-----------------------------+
+
+
+Notes:
+- Signup saves user with enabled=false and sends email.
+- Verify sets enabled=true and saves user.
+- Login requires enabled==true before authentication.
+- JWT secret must be strong (>=256 bits for HS256).
+
+
+
+ */

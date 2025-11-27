@@ -41,7 +41,7 @@ public class JwtService {
 
     /**
      * Create a token with default/empty extra claims.
-     * Typical call used by authentication controller after successful login.
+     * call used by authentication controller after successful login.
      */
     public String generateToken(UserDetails userDetails) {
         return generateToken(Map.of(), userDetails);
@@ -160,7 +160,7 @@ public class JwtService {
        ---------------------- */
 
     /**
-     * Expose configured expiration (ms) for other classes if needed.
+     * Expose configured expiration for other classes.
      */
     public long getExpirationTime() {
         return jwtExpiration;

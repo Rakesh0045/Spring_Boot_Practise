@@ -1,6 +1,5 @@
 package org.example.springjwt.service;
 
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.example.springjwt.dto.LoginUserDto;
 import org.example.springjwt.dto.RegisterUserDto;
@@ -33,6 +32,12 @@ public class AuthenticationService {
     // ----------------------------------------
     public User signup(RegisterUserDto registerUserDto) {
 
+        // Check if user already exists
+
+        if(userRepository.findByEmail(registerUserDto.getEmail()).isPresent()){
+            throw new UsernameNotFoundException("Email Already Exists");
+        }
+
         // Create new user object from DTO
         User user = new User(
                 registerUserDto.getUsername(),
@@ -50,7 +55,7 @@ public class AuthenticationService {
         user.setEnabled(false);
 
         // Send the verification email
-        sendVerificationEmail(user);
+        emailService.verificationEmail(user);
 
         // Save user into DB (verification code + disabled status stored)
         return userRepository.save(user);
@@ -108,7 +113,7 @@ public class AuthenticationService {
                 // Mark account verified
                 user.setEnabled(true);
 
-                // Clear OTP details
+                // Clear OTP details from DB
                 user.setVerificationCode(null);
                 user.setVerificationCodeExpiresAt(null);
 
@@ -144,7 +149,7 @@ public class AuthenticationService {
             user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(10));
 
             // Send new email and save
-            sendVerificationEmail(user);
+            emailService.verificationEmail(user);
             userRepository.save(user);
 
         } else {
@@ -163,49 +168,5 @@ public class AuthenticationService {
     }
 
 
-    // ----------------------------------------
-    // SEND EMAIL: Builds HTML + calls EmailService
-    // ----------------------------------------
-    private void sendVerificationEmail(User user) {
 
-        String subject = "Account Verification";
-        String verificationCode = user.getVerificationCode();
-
-        // HTML message for email
-        String htmlMessage =
-                "<!DOCTYPE html>" +
-                        "<html>" +
-                        "<head>" +
-                        "<meta charset='UTF-8'>" +
-                        "<title>Verification Code</title>" +
-                        "</head>" +
-                        "<body style='margin:0; padding:0; font-family:Arial, sans-serif; background:#f4f4f4;'>" +
-
-                        "<div style='max-width:480px; margin:40px auto; background:#ffffff; border-radius:8px; " +
-                        "padding:30px; box-shadow:0 4px 12px rgba(0,0,0,0.08);'>" +
-
-                        "<h2 style='margin:0 0 10px; color:#222; font-size:22px; font-weight:600;'>Verify Your Email</h2>" +
-
-                        "<p style='font-size:15px; line-height:1.6; color:#555;'>Use the verification code below to continue:</p>" +
-
-                        "<div style='margin:25px 0; padding:18px; text-align:center; " +
-                        "background:#f7f9ff; border:1px solid #dbe3ff; border-radius:6px;'>" +
-
-                        "<span style='font-size:26px; font-weight:700; color:#3b5bdb; letter-spacing:3px;'>" +
-                        verificationCode + "</span>" +
-                        "</div>" +
-
-                        "<p style='font-size:13px; color:#888;'>If you didn't request this, please ignore this email.</p>" +
-
-                        "</div>" +
-                        "</body>" +
-                        "</html>";
-
-        // Attempt to send mail
-        try {
-            emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace(); // for debugging — replace with logger in production
-        }
-    }
 }
