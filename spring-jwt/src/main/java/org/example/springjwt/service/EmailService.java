@@ -90,4 +90,42 @@ public class EmailService {
             e.printStackTrace(); // for debugging — replace with logger in production
         }
     }
+
+    public void sendPasswordResetEmail(User user, String rawToken) {
+        String subject = "Reset your password";
+        String htmlMessage =
+                "<!DOCTYPE html>" +
+                        "<html>" +
+                        "<head>" +
+                        "<meta charset='UTF-8'>" +
+                        "<title>Reset Password</title>" +
+                        "</head>" +
+                        "<body style='margin:0; padding:0; font-family:Arial, sans-serif; background:#f4f4f4;'>" +
+
+                        "<div style='max-width:480px; margin:40px auto; background:#ffffff; border-radius:8px; " +
+                        "padding:30px; box-shadow:0 4px 12px rgba(0,0,0,0.08);'>" +
+
+                        "<h2 style='margin:0 0 10px; color:#222; font-size:22px; font-weight:600;'>Reset Your Password</h2>" +
+
+                        "<p style='font-size:15px; line-height:1.6; color:#555;'>We received a request to reset your password. Use the token below to set a new password.<br/><br/>This token expires in 15 minutes.</p>" +
+
+                        "<div style='margin:25px 0; padding:18px; text-align:center; " +
+                        "background:#f7f9ff; border:1px solid #dbe3ff; border-radius:6px;'>" +
+
+                        "<span style='font-size:18px; font-weight:700; color:#3b5bdb; letter-spacing:1px; word-break:break-all;'>" +
+                        rawToken + "</span>" +
+                        "</div>" +
+
+                        "<p style='font-size:13px; color:#888;'>If you didn't request this, please contact support immediately.</p>" +
+
+                        "</div>" +
+                        "</body>" +
+                        "</html>";
+
+        try {
+            sendVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -6,11 +6,14 @@ import org.example.springjwt.dto.RegisterUserDto;
 import org.example.springjwt.dto.VerifyUserDto;
 import org.example.springjwt.entity.User;
 import org.example.springjwt.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,6 +28,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+
 
 
     // ----------------------------------------
@@ -166,6 +170,9 @@ public class AuthenticationService {
         int code = random.nextInt(900000) + 100000; // ensures 100000–999999
         return String.valueOf(code);
     }
+
+
+
 
 
 

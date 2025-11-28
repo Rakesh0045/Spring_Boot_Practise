@@ -1,13 +1,11 @@
 package org.example.springjwt.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.springjwt.dto.LoginResponseDto;
-import org.example.springjwt.dto.LoginUserDto;
-import org.example.springjwt.dto.RegisterUserDto;
-import org.example.springjwt.dto.VerifyUserDto;
+import org.example.springjwt.dto.*;
 import org.example.springjwt.entity.User;
 import org.example.springjwt.service.AuthenticationService;
 import org.example.springjwt.service.JwtService;
+import org.example.springjwt.service.PasswordResetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +16,7 @@ public class AuthController {
 
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
+    private final PasswordResetService passwordResetService;
 
     /**
      * User Registration Endpoint.
@@ -99,6 +98,59 @@ public class AuthController {
         }
     }
 
+    /**
+     * Forgot Password Endpoint.
+     *
+     * Steps:
+     * 1. Accepts email in request.
+     * 2. Calls createResetToken(), which:
+     *      - silently checks if user exists,
+     *      - invalidates previous valid tokens,
+     *      - generates a secure random token,
+     *      - hashes and stores it,
+     *      - emails the raw token to user.
+     * 3. Always returns a generic message (never leaks whether email exists).
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgot(@RequestBody ForgotPasswordRequest request) {
+        try {
+            passwordResetService.createResetToken(request.getEmail());
+        } catch (Exception ignored) {}
+
+        return ResponseEntity.ok("If the email exists, password reset instructions have been sent.");
+    }
+
+
+    /**
+     * Reset Password Endpoint.
+     *
+     * Steps:
+     * 1. Accepts raw token + new password.
+     * 2. Calls resetPassword(), which:
+     *      - hashes raw token,
+     *      - looks up matching stored hash,
+     *      - checks expiry and "used" status,
+     *      - updates user password if valid,
+     *      - marks token as used.
+     * 3. Response NEVER reveals validity of the token.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+        try {
+            passwordResetService.resetPassword(resetPasswordRequest.getToken(),
+                    resetPasswordRequest.getNewPassword());
+            return ResponseEntity.ok("If the token is valid, the password has been reset.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid or expired token / invalid input.");
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(getClass()).error("Unexpected error during password reset", e);
+            return ResponseEntity.status(500).body("Server error while resetting password.");
+        }
+    }
+
+
+
+
 
 }
 
@@ -107,89 +159,76 @@ public class AuthController {
 
                              +----------------+
                              |     Client     |
-                             | (frontend/Post)|
                              +----------------+
                                       |
-                                      | POST /auth/signup {username,email,password}
+       Signup ------------------------|
+       | POST /auth/signup           |
                                       v
                           +-----------------------------+
                           |        AuthController       |
                           +-----------------------------+
                                       |
-                                      | calls
                                       v
                           +-----------------------------+
                           |   AuthenticationService     |
-                          | - create User (enabled=false)|
-                          | - gen verification code     |
-                          | - sendVerificationEmail()   |
+                          | - create user (enabled=false)
+                          | - generate verification code
+                          | - send verification email
                           +-----------------------------+
-                                      |                     \
-                                      | save user              \ send email
-                                      v                        \
-                       +---------------------------+            v
-                       |      UserRepository       |     +-----------------+
-                       |  (Postgres - users table) |<----|   EmailService   |
-                       +---------------------------+     | (JavaMailSender) |
-                                      |                  +-----------------+
                                       |
-                                      | (user receives code)
-                                      v
-                             (Client UI asks user for code)
+                             User verifies email
                                       |
-                                      | POST /auth/verify {email,code}
+              POST /auth/verify ------------------------>
+                                      |
                                       v
                           +-----------------------------+
                           |   AuthenticationService     |
-                          | - validate code & expiry    |
-                          | - set enabled = true        |
-                          | - save user                 |
-                          +-----------------------------+
-                                      |
-                                      | POST /auth/login {email,password}
-                                      v
-                          +-----------------------------+
-                          |   AuthenticationService     |
-                          | - check enabled == true     |
-                          | - authenticationManager.auth|
-                          +-----------------------------+
-                                      |
-                                      | on success
-                                      v
-                              +----------------+
-                              |    JwtService  |
-                              | - generate JWT |
-                              +----------------+
-                                      |
-                                      |  returns token (Bearer <jwt>)
-                                      v
-                             +--------------------+
-                             |     Client Stores   |
-                             |   token (localStorage)|
-                             +--------------------+
-                                      |
-                                      | Request protected resource
-                                      | Authorization: Bearer <jwt>
-                                      v
-                        +----------------------------------+
-                        |    JwtAuthenticationFilter       |
-                        | - extract token from header      |
-                        | - jwtService.validateToken(token)|
-                        | - load UserDetails via repo      |
-                        | - set SecurityContext if OK      |
-                        +----------------------------------+
-                                      |
-                                      v
-                          +-----------------------------+
-                          |   Protected Controller(s)   |
+                          | - verify OTP + enable user  |
                           +-----------------------------+
 
+-------------- LOGIN FLOW --------------
+POST /auth/login {email,password}
+        |
+        v
++----------------------+     +----------------+
+| AuthenticationService| --> |   JwtService   |
++----------------------+     +----------------+
+        |
+        v
+Returns JWT token
 
-Notes:
-- Signup saves user with enabled=false and sends email.
-- Verify sets enabled=true and saves user.
-- Login requires enabled==true before authentication.
-- JWT secret must be strong (>=256 bits for HS256).
+
+----------- FORGOT PASSWORD FLOW -----------
+Client: POST /auth/forgot-password {email}
+        |
+        v
++-----------------------------+
+|   PasswordResetService      |
+| - find user silently        |
+| - invalidate old tokens     |
+| - generate raw token        |
+| - hash + save token         |
+| - send email with rawToken  |
++-----------------------------+
+
+
+----------- RESET PASSWORD FLOW -----------
+Client: POST /auth/reset-password {token,newPassword}
+        |
+        v
++-----------------------------+
+|   PasswordResetService      |
+| - hash raw token            |
+| - find matching tokenHash   |
+| - validate expiry + used    |
+| - update user password      |
+| - mark token as used        |
++-----------------------------+
+
+
+----------- PROTECTED RESOURCES -----------
+All other endpoints require:
+Authorization: Bearer <jwt>
 
 
 
